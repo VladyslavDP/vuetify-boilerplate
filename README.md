@@ -31,4 +31,24 @@ Converting FormData to JSON in JavaScript
 https://www.seancdavis.com/posts/convert-form-data-to-json/
 
 How to use a button as a file uploader with Vuetify in Vue.js
-https://ourcodeworld.com/articles/read/1424/how-to-use-a-button-as-a-file-uploader-with-vuetify-in-vuejs
+https://ourcodeworld.com/articles/read/1424/how-to-use-a-button-a s-a-file-uploader-with-vuetify-in-vuejs
+
+TODO
+
+1. Add props +
+2. Add logic for uloading and removing documents.. Should be in vuex
+3. Add extractor for comments
+4. Add mimetypes +
+5. Add rules +
+
+---
+
+VUEX:
+
+1. Add getter documents
+2. Add upload document
+3. Add remove document
+4. Add
+
+VS CODE
+For macOS users: Use Fn + ⌘ + F2 to rename a variable inside a code block.

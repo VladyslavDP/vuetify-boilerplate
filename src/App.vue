@@ -16,12 +16,16 @@
     </v-app-bar>
 
     <v-content>
-      <DocumentGroupComponent />
+      documents: {{ documents }}
+      <DocumentGroupComponent :documentGroup="documentObjectMock" />
     </v-content>
   </v-app>
 </template>
 
 <script>
+import { mapActions, mapGetters, mapState } from "vuex";
+
+import { documentObjectMock } from "./common";
 import DocumentGroupComponent from "./components/documents/DocumentGroupComponent.vue";
 
 export default {
@@ -30,7 +34,17 @@ export default {
     DocumentGroupComponent,
   },
   data: () => ({
-    //
+    documentObjectMock,
   }),
+  computed: {
+    ...mapState(["count"]),
+    ...mapGetters(["documents"]),
+  },
+  methods: {
+    ...mapActions(["getDocuments"]),
+  },
+  mounted() {
+    this.getDocuments();
+  },
 };
 </script>

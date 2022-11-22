@@ -4,7 +4,7 @@
     <v-layout text-center wrap>
       <v-row class="group--wrapper pa-2">
         <v-col cols="3" align-self="center"
-          ><h2 class="text-left">Інструменти по процесу</h2></v-col
+          ><h2 class="text-left">{{ documentGroup.title }}</h2></v-col
         >
         <v-col cols="3" offset="2" class="d-flex">
           <v-btn
@@ -14,21 +14,22 @@
             class="ma-0 white--text"
             @click="handleFileImport"
           >
-            Добавить документ
+            Додати документи
             <v-icon right dark>
               mdi-cloud-upload
             </v-icon>
           </v-btn>
           <input
+            :accept="documentGroup.mimeTypes"
             ref="uploader"
-            class="d-none"
             type="file"
+            hidden
             @change="onFileChanged"
           />
         </v-col>
       </v-row>
     </v-layout>
-    <v-layout text-center wrap>
+    <v-layout text-center wrap v-if="documentGroup.documents.length">
       <v-row class="document--wrapper py-0">
         <v-col cols="3">
           <p class="text-left py-0 ma-0">
@@ -42,25 +43,17 @@
         </v-col>
       </v-row>
     </v-layout>
-    <v-layout text-center wrap>
-      <v-row class="document--wrapper pa-0">
-        <v-col cols="3" class="py-0">
-          <p
-            class="document--name text-left py-2 px-4"
-            style="cursor: pointer;"
-            @click="download"
-          >
-            <span>filename filename filename</span>
-
-            <v-btn fab x-small depressed color="transparent">
-              <v-icon color="primary">mdi-close</v-icon>
-            </v-btn>
-          </p>
-        </v-col>
-        <v-col cols="3" offset="2" class="py-0 d-flex align-center">
-          <v-text-field label="Solo" placeholder="Коментар" solo></v-text-field>
-        </v-col>
-      </v-row>
+    <v-layout
+      text-center
+      wrap
+      v-for="document in documentGroup.documents"
+      :key="document.key"
+    >
+      <DocumentFieldComponent
+        :document="document"
+        @document:download="download"
+        @document:remove="removeFile"
+      />
     </v-layout>
     <v-layout text-center wrap>
       <v-row class="pa-2">
@@ -72,7 +65,7 @@
       </v-row>
     </v-layout>
 
-    <v-layout>
+    <v-layout v-show="false">
       <v-form ref="form" v-model="valid" lazy-validation @submit="checkForm">
         <v-text-field
           v-model="name"
@@ -128,9 +121,16 @@
 
 <script>
 import axios from "axios";
+import DocumentFieldComponent from "./DocumentFieldComponent.vue";
 
 export default {
   name: "DocumentGroupComponent",
+  components: { DocumentFieldComponent },
+  props: {
+    documentGroup: {
+      type: Object,
+    },
+  },
   data: () => ({
     loading3: false,
     valid: true,
@@ -152,8 +152,12 @@ export default {
   }),
 
   methods: {
+    removeFile(value) {
+      // eslint-disable-next-line no-console
+      console.log(value); // someValue
+    },
     // eslint-disable-next-line no-console
-    download: () => console.log("download"),
+    download: (e) => console.log(e),
     // eslint-disable-next-line no-console
     remove: () => console.log("remove"),
 
@@ -170,18 +174,9 @@ export default {
     },
     checkForm(e) {
       e.preventDefault();
-      const isValid = this.$refs.form.validate();
+      // const isValid = this.$refs.form.validate();
 
-      const formData = new FormData(this.$refs.form.$el);
-
-      for (variable of formData) {
-        console.log(this.validate);
-      }
-
-      // Build the data object.
-      const data = {};
-      formData.forEach((value, key) => (data[key] = value));
-      console.log(data);
+      // const formData = new FormData(this.$refs.form.$el);
     },
     handleFileImport() {
       this.isSelecting = true;
@@ -196,6 +191,8 @@ export default {
       );
 
       // Trigger click on the FileInput
+      // eslint-disable-next-line no-console
+      console.log("wtf");
       this.$refs.uploader.click();
     },
     onFileChanged(e) {
@@ -206,6 +203,7 @@ export default {
 
       axios.post("/", fd, {
         onUploadProgress: (uploadE) => {
+          // eslint-disable-next-line no-console
           console.log(
             `Upload progress ${Math.round(
               (uploadE.loaded / uploadE.total) * 100
@@ -213,6 +211,7 @@ export default {
           );
         },
       });
+      // eslint-disable-next-line no-console
       console.log(e.target);
     },
   },
