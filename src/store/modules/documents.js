@@ -4,19 +4,24 @@ import { delay } from "../../utils";
 export default {
   state: {
     documents: [],
+    metaInfo: [],
   },
   mutations: {
     setDocuments: (state, docs) => {
-      console.log(docs);
       state.documents = docs;
     },
-    addDocument: (document) => {
-      this.state.document.push(document);
+    addDocument: (state, document) => {
+      // eslint-disable-next-line no-console
+      console.log(state);
+      state.documents[0].documents.push(document);
     },
-    removeDocument: (key) => {
-      this.state.documents = this.state.documents.filter(
-        (document) => document.key !== key
-      );
+    removeDocument: (state, key) => {
+      // eslint-disable-next-line no-console
+      console.log(key);
+      state.documents[0].documents = [];
+      // state.documents[0].documents = state.documents[0].documents.filter(
+      //   (document) => document.key !== key
+      // );
     },
   },
   actions: {
@@ -24,6 +29,12 @@ export default {
       await delay(2000);
       const documents = [{ ...documentObjectMock }];
       context.commit("setDocuments", documents);
+    },
+    addDocument: async (context, document) => {
+      context.commit("addDocument", document);
+    },
+    removeDocument: async (context, key) => {
+      context.commit("removeDocument", key);
     },
   },
   getters: {

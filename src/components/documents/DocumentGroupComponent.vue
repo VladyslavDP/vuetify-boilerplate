@@ -1,6 +1,7 @@
 <!-- eslint-disable no-console -->
 <template>
   <v-container>
+    <pre> {{ documentGroup }}</pre>
     <v-layout text-center wrap>
       <v-row class="group--wrapper pa-2">
         <v-col cols="3" align-self="center"
@@ -29,7 +30,8 @@
         </v-col>
       </v-row>
     </v-layout>
-    <v-layout text-center wrap v-if="documentGroup.documents.length">
+    <!-- v-if="documentGroup.documents.length" -->
+    <v-layout text-center wrap>
       <v-row class="document--wrapper py-0">
         <v-col cols="3">
           <p class="text-left py-0 ma-0">
@@ -46,7 +48,7 @@
     <v-layout
       text-center
       wrap
-      v-for="document in documentGroup.documents"
+      v-for="document in documentGroup[0].documents"
       :key="document.key"
     >
       <DocumentFieldComponent
@@ -121,6 +123,7 @@
 
 <script>
 import axios from "axios";
+import { mapActions } from "vuex";
 import DocumentFieldComponent from "./DocumentFieldComponent.vue";
 
 export default {
@@ -128,7 +131,7 @@ export default {
   components: { DocumentFieldComponent },
   props: {
     documentGroup: {
-      type: Object,
+      type: Array,
     },
   },
   data: () => ({
@@ -152,9 +155,10 @@ export default {
   }),
 
   methods: {
+    ...mapActions(["addDocument", "removeDocument"]),
     removeFile(value) {
       // eslint-disable-next-line no-console
-      console.log(value); // someValue
+      this.removeDocument(value);
     },
     // eslint-disable-next-line no-console
     download: (e) => console.log(e),
@@ -198,6 +202,13 @@ export default {
     onFileChanged(e) {
       this.selectedFile = e.target.files[0];
 
+      const document = {
+        fileName: this.selectedFile.name,
+        key: "processTools.2",
+        uploadTime: new Date().getTime(),
+        comment: "",
+      };
+      this.addDocument(document);
       const fd = new FormData();
       fd.append("document", this.selectedFile, this.selectedFile.name);
 

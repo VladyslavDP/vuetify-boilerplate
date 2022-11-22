@@ -42,10 +42,10 @@ export default {
   methods: {
     remove(e) {
       e.stopPropagation();
-      this.$emit("document:remove", `removing ${this.document.key}`);
+      this.$emit("document:remove", this.document.key);
     },
     download() {
-      this.$emit("document:download", `downloading ${this.document.key}`);
+      this.$emit("document:download", this.document.key);
     },
   },
 };

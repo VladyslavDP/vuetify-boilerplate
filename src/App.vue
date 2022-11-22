@@ -16,8 +16,7 @@
     </v-app-bar>
 
     <v-content>
-      documents: {{ documents }}
-      <DocumentGroupComponent :documentGroup="documentObjectMock" />
+      <DocumentGroupComponent :documentGroup="documents" />
     </v-content>
   </v-app>
 </template>

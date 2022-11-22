@@ -40,15 +40,16 @@ TODO
 3. Add extractor for comments
 4. Add mimetypes +
 5. Add rules +
+6. Add signature get documents service + include meta data for groups
 
 ---
 
 VUEX:
 
-1. Add getter documents
-2. Add upload document
+1. Add getter documents +
+2. Add upload document +
 3. Add remove document
-4. Add
+4. Add submitter for comments
 
 VS CODE
 For macOS users: Use Fn + ⌘ + F2 to rename a variable inside a code block.
