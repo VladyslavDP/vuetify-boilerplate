@@ -18,6 +18,8 @@
       <v-text-field
         label="Solo"
         counter="250"
+        @change="updateDocument"
+        :rules="[...validation.maxLength(250)]"
         v-model="document.comment"
         placeholder="Коментар"
         solo
@@ -27,6 +29,8 @@
 </template>
 
 <script>
+import validation from "../../common/rules";
+
 export default {
   name: "DocumentFieldComponent",
   props: {
@@ -37,9 +41,12 @@ export default {
   data: () => ({
     isSelecting: false,
     selectedFile: null,
+    validation,
   }),
-
   methods: {
+    updateDocument() {
+      this.$emit("document:update", this.document);
+    },
     remove(e) {
       e.stopPropagation();
       this.$emit("document:remove", this.document.key);

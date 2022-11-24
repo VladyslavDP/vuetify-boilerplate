@@ -4,31 +4,36 @@ import { delay } from "../../utils";
 export default {
   state: {
     documents: [],
-    metaInfo: [],
+    metaInfo: {},
   },
   mutations: {
     setDocuments: (state, docs) => {
       state.documents = docs;
     },
+    setMetaInfo: (state, metaInfo) => {
+      state.metaInfo = metaInfo;
+    },
     addDocument: (state, document) => {
-      // eslint-disable-next-line no-console
-      console.log(state);
-      state.documents[0].documents.push(document);
+      state.documents.push(document);
     },
     removeDocument: (state, key) => {
-      // eslint-disable-next-line no-console
-      console.log(key);
-      state.documents[0].documents = [];
-      // state.documents[0].documents = state.documents[0].documents.filter(
-      //   (document) => document.key !== key
-      // );
+      state.documents = state.documents.filter(
+        (document) => document.key !== key
+      );
+    },
+    updateDocument(state, document) {
+      state.documents = state.documents.map((item) =>
+        document.key === item.key ? document : item
+      );
     },
   },
   actions: {
+    // TODO all APIs
     getDocuments: async (context) => {
-      await delay(2000);
-      const documents = [{ ...documentObjectMock }];
+      await delay(100);
+      const { metaInfo, documents } = documentObjectMock;
       context.commit("setDocuments", documents);
+      context.commit("setMetaInfo", metaInfo);
     },
     addDocument: async (context, document) => {
       context.commit("addDocument", document);
@@ -36,10 +41,12 @@ export default {
     removeDocument: async (context, key) => {
       context.commit("removeDocument", key);
     },
+    updateDocument: (context, document) => {
+      context.commit("updateDocument", document);
+    },
   },
   getters: {
-    documents: (state) => {
-      return state.documents;
-    },
+    documents: (state) => state.documents,
+    metaInfo: (state) => state.metaInfo,
   },
 };

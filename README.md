@@ -36,11 +36,14 @@ https://ourcodeworld.com/articles/read/1424/how-to-use-a-button-a s-a-file-uploa
 TODO
 
 1. Add props +
-2. Add logic for uloading and removing documents.. Should be in vuex
-3. Add extractor for comments
+2. Add logic for uloading and removing documents.. Should be in vuex +
+3. Add extractor for comments +
 4. Add mimetypes +
 5. Add rules +
-6. Add signature get documents service + include meta data for groups
+6. Add signature get documents service + include meta data for groups +
+7. Add readonly rule (in prod)
+8. Add data types (in prod)
+9. Add backend (in prod)
 
 ---
 
@@ -48,8 +51,13 @@ VUEX:
 
 1. Add getter documents +
 2. Add upload document +
-3. Add remove document
+3. Add remove document +
 4. Add submitter for comments
 
 VS CODE
 For macOS users: Use Fn + ⌘ + F2 to rename a variable inside a code block.
+
+---
+
+readonly
+todo create readonly ONLY if propsed ID !== document.id && document.comment.length

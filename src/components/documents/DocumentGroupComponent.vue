@@ -1,123 +1,91 @@
-<!-- eslint-disable no-console -->
 <template>
   <v-container>
-    <pre> {{ documentGroup }}</pre>
-    <v-layout text-center wrap>
-      <v-row class="group--wrapper pa-2">
-        <v-col cols="3" align-self="center"
-          ><h2 class="text-left">{{ documentGroup.title }}</h2></v-col
+    <pre>{{ documents }}</pre>
+    <v-form ref="form" v-model="valid" @submit="submit">
+      <v-col
+        class="py-0"
+        v-for="items in groupedDocuments"
+        :key="items.category"
+      >
+        <v-layout class="documents--title" text-center wrap>
+          <v-row class="group--wrapper pa-2">
+            <v-col cols="3" align-self="center"
+              ><h2 class="text-left">{{ items.title }}</h2></v-col
+            >
+            <v-col cols="3" offset="2" class="d-flex">
+              <v-btn
+                :loading="loading3"
+                :disabled="items.documents.length >= items.maxFiles"
+                color="blue-grey"
+                class="ma-0 white--text"
+                @click="handleFileImport(items.key)"
+              >
+                Додати документи
+                <v-icon right dark>
+                  mdi-cloud-upload
+                </v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-layout>
+        <v-layout
+          class="documents--subtitle"
+          text-center
+          wrap
+          v-if="items.documents.length"
         >
-        <v-col cols="3" offset="2" class="d-flex">
-          <v-btn
-            :loading="loading3"
-            :disabled="loading3"
-            color="blue-grey"
-            class="ma-0 white--text"
-            @click="handleFileImport"
-          >
-            Додати документи
-            <v-icon right dark>
-              mdi-cloud-upload
-            </v-icon>
-          </v-btn>
-          <input
-            :accept="documentGroup.mimeTypes"
-            ref="uploader"
-            type="file"
-            hidden
-            @change="onFileChanged"
+          <v-row class="document--wrapper py-0">
+            <v-col cols="3">
+              <p class="text-left py-0 ma-0">
+                файл
+              </p>
+            </v-col>
+            <v-col cols="3" offset="2" class="py-0 d-flex align-center">
+              <p class="text-left py-0 ma-0">
+                коментар
+              </p>
+            </v-col>
+          </v-row>
+        </v-layout>
+        <v-layout
+          class="documents--data"
+          text-center
+          wrap
+          v-for="document in items.documents"
+          :key="document.key"
+        >
+          <DocumentFieldComponent
+            :document="document"
+            @document:download="download"
+            @document:remove="removeFile"
+            @document:update="update"
           />
-        </v-col>
-      </v-row>
-    </v-layout>
-    <!-- v-if="documentGroup.documents.length" -->
-    <v-layout text-center wrap>
-      <v-row class="document--wrapper py-0">
-        <v-col cols="3">
-          <p class="text-left py-0 ma-0">
-            файл
-          </p>
-        </v-col>
-        <v-col cols="3" offset="2" class="py-0 d-flex align-center">
-          <p class="text-left py-0 ma-0">
-            коментар
-          </p>
-        </v-col>
-      </v-row>
-    </v-layout>
-    <v-layout
-      text-center
-      wrap
-      v-for="document in documentGroup[0].documents"
-      :key="document.key"
-    >
-      <DocumentFieldComponent
-        :document="document"
-        @document:download="download"
-        @document:remove="removeFile"
-      />
-    </v-layout>
-    <v-layout text-center wrap>
-      <v-row class="pa-2">
-        <v-col cols="12">
-          <v-btn class="ma-2" outlined color="indigo">
-            ЗАКРИТИ
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-layout>
+        </v-layout>
+      </v-col>
 
-    <v-layout v-show="false">
-      <v-form ref="form" v-model="valid" lazy-validation @submit="checkForm">
-        <v-text-field
-          v-model="name"
-          :counter="10"
-          :rules="nameRules"
-          label="Name"
-          required
-        ></v-text-field>
-
-        <v-text-field
-          v-model="email"
-          :rules="emailRules"
-          label="E-mail"
-          required
-        ></v-text-field>
-
-        <v-select
-          v-model="select"
-          :items="items"
-          :rules="[(v) => !!v || 'Item is required']"
-          label="Item"
-          required
-        ></v-select>
-
-        <v-checkbox
-          v-model="checkbox"
-          :rules="[(v) => !!v || 'You must agree to continue!']"
-          label="Do you agree?"
-          required
-        ></v-checkbox>
-
-        <v-btn
-          :disabled="!valid"
-          color="success"
-          class="mr-4"
-          @click="validate"
-        >
-          Validate
-        </v-btn>
-
-        <v-btn color="error" class="mr-4" @click="reset">
-          Reset Form
-        </v-btn>
-
-        <v-btn color="warning" @click="resetValidation">
-          Reset Validation
-        </v-btn>
-        <v-btn type="submit" color="success">Login</v-btn>
-      </v-form>
-    </v-layout>
+      <v-layout text-center wrap>
+        <v-row class="pa-2">
+          <v-col cols="12">
+            <input
+              :accept="items.mimeTypes"
+              ref="uploader"
+              type="file"
+              hidden
+              @change="onFileChanged"
+            />
+            <v-btn
+              class="ma-2"
+              type="submit"
+              :disabled="!valid"
+              outlined
+              color="indigo"
+            >
+              ЗАКРИТИ
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-layout>
+    </v-form>
   </v-container>
 </template>
 
@@ -130,8 +98,17 @@ export default {
   name: "DocumentGroupComponent",
   components: { DocumentFieldComponent },
   props: {
-    documentGroup: {
+    documents: {
       type: Array,
+      default: () => [],
+    },
+    metaInfo: {
+      type: Object,
+      default: () => {},
+    },
+    ID: {
+      type: String,
+      default: () => "",
     },
   },
   data: () => ({
@@ -152,22 +129,40 @@ export default {
     checkbox: false,
     isSelecting: false,
     selectedFile: null,
+    uploaderKey: null,
+    formData: {
+      comments: {},
+    },
   }),
-
+  computed: {
+    groupedDocuments() {
+      const data = Object.keys(this.metaInfo).reduce((acc, item) => {
+        const groupedDocuments = this.documents.filter((document) =>
+          document.key.match(item)
+        );
+        const metaData = {
+          ...this.metaInfo[item],
+          key: item,
+          documents: groupedDocuments,
+        };
+        return [...acc, metaData];
+      }, []);
+      return data;
+    },
+  },
   methods: {
     ...mapActions(["addDocument", "removeDocument"]),
     removeFile(value) {
-      // eslint-disable-next-line no-console
+      delete this.formData.comments[`document.${value}`];
       this.removeDocument(value);
     },
     // eslint-disable-next-line no-console
     download: (e) => console.log(e),
-    // eslint-disable-next-line no-console
-    remove: () => console.log("remove"),
-
+    update(document) {
+      const key = `document.${document.key}`;
+      this.formData.comments[key] = document.comment;
+    },
     validate() {
-      // eslint-disable-next-line no-console
-      console.log(this.$refs.form);
       this.$refs.form.validate();
     },
     reset() {
@@ -176,41 +171,57 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
-    checkForm(e) {
+    submit(e) {
       e.preventDefault();
+      // eslint-disable-next-line no-console
+      const { comments } = this.formData;
+      // eslint-disable-next-line no-console
+      console.log(comments);
+      if (Object.keys(comments).length) {
+        // todo save comments API
+      }
       // const isValid = this.$refs.form.validate();
-
       // const formData = new FormData(this.$refs.form.$el);
     },
-    handleFileImport() {
+    handleFileImport(docKey) {
       this.isSelecting = true;
+      // todo generate key for uploader file
+      const indexKeys = this.documents.reduce((acc, document) => {
+        if (document.key.match(docKey)) {
+          const index = Number(document.key.split(".")[1]);
+          const isCorrectIndex = isNaN(index);
+          if (!isCorrectIndex) {
+            acc.push(index);
+          }
+        }
+        return acc;
+      }, []);
 
-      // After obtaining the focus when closing the FilePicker, return the button state to normal
-      window.addEventListener(
-        "focus",
-        () => {
-          this.isSelecting = false;
-        },
-        { once: true }
-      );
+      for (let i = 1; i <= this.metaInfo[docKey].maxFiles; i++) {
+        if (!indexKeys.includes(i)) {
+          this.uploaderKey = `${docKey}.${i}`;
+          break;
+        }
+      }
 
-      // Trigger click on the FileInput
-      // eslint-disable-next-line no-console
-      console.log("wtf");
       this.$refs.uploader.click();
     },
     onFileChanged(e) {
       this.selectedFile = e.target.files[0];
 
+      // todo prepare document key
       const document = {
         fileName: this.selectedFile.name,
-        key: "processTools.2",
+        key: this.uploaderKey,
         uploadTime: new Date().getTime(),
         comment: "",
       };
       this.addDocument(document);
       const fd = new FormData();
       fd.append("document", this.selectedFile, this.selectedFile.name);
+      for (let [key, value] of Object.entries(document)) {
+        fd.append(key, value);
+      }
 
       axios.post("/", fd, {
         onUploadProgress: (uploadE) => {

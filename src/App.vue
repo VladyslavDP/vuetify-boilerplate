@@ -16,7 +16,7 @@
     </v-app-bar>
 
     <v-content>
-      <DocumentGroupComponent :documentGroup="documents" />
+      <DocumentGroupComponent :documents="documents" :metaInfo="metaInfo" id="" />
     </v-content>
   </v-app>
 </template>
@@ -24,7 +24,6 @@
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
 
-import { documentObjectMock } from "./common";
 import DocumentGroupComponent from "./components/documents/DocumentGroupComponent.vue";
 
 export default {
@@ -32,12 +31,10 @@ export default {
   components: {
     DocumentGroupComponent,
   },
-  data: () => ({
-    documentObjectMock,
-  }),
+  data: () => ({}),
   computed: {
     ...mapState(["count"]),
-    ...mapGetters(["documents"]),
+    ...mapGetters(["documents", "metaInfo"]),
   },
   methods: {
     ...mapActions(["getDocuments"]),
